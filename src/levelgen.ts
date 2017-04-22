@@ -21,24 +21,18 @@ class Level {
 		const rc = this.rc;
 		const ac = this.ac;
 
-		const sun = scene.makeEntity({
+		const roomLight = scene.makeEntity({
+			transform: {
+				position: [2.5, 2.2, -2.5]
+			},
 			light: {
-				name: "sun",
+				name: "bulb",
 				colour: [1, 1, 1],
-				type: asset.LightType.Directional,
+				type: asset.LightType.Point,
 				intensity: .5,
+				range: 4,
 			}
 		});
-		scene.lightMgr.setDirection(sun.light!, [1, -.4, -.7]);
-		// const sun2 = scene.makeEntity({
-		// 	light: {
-		// 		name: "sun2",
-		// 		colour: [1, 1, 1],
-		// 		type: asset.LightType.Directional,
-		// 		intensity: .5,
-		// 	}
-		// });
-		// scene.lightMgr.setDirection(sun2.light!, [-1, -.4, 1]);
 
 		const testObj = scene.makeEntity({
 			transform: {

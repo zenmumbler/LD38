@@ -235,7 +235,7 @@ class MainScene implements sd.SceneController {
 		if (newMode !== GameMode.Loading) {
 			dom.show("#stage");
 			// this.sfx_.startMusic();
-			this.player_ = new PlayerController(this.rc.gl.canvas, [0, 1.5, 0], this.scene_, this.level_, this.sfx_);
+			this.player_ = new PlayerController(this.rc.gl.canvas, [2.5, 1.5, -1], this.scene_, this.level_, this.sfx_);
 		}
 
 		this.mode_ = newMode;
