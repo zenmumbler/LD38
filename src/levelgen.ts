@@ -24,23 +24,33 @@ class Level {
 		const sun = scene.makeEntity({
 			light: {
 				name: "sun",
-				colour: [.5, .5, .9],
+				colour: [1, 1, 1],
 				type: asset.LightType.Directional,
-				intensity: .16,
+				intensity: .5,
 			}
 		});
-		scene.lightMgr.setDirection(sun.light!, [.2, -1, -.4]);
+		scene.lightMgr.setDirection(sun.light!, [1, -.4, -.7]);
+		// const sun2 = scene.makeEntity({
+		// 	light: {
+		// 		name: "sun2",
+		// 		colour: [1, 1, 1],
+		// 		type: asset.LightType.Directional,
+		// 		intensity: .5,
+		// 	}
+		// });
+		// scene.lightMgr.setDirection(sun2.light!, [-1, -.4, 1]);
 
 		const testObj = scene.makeEntity({
 			transform: {
-				position: [0, .5, -3]
+				position: [0, 0, 0],
+				// scale: [.25, .25, .25]
 			},
 			mesh: {
 				name: "test",
-				meshData: meshdata.gen.generate(new meshdata.gen.Box(meshdata.gen.cubeDescriptor(1)))
+				meshData: assets.model.plants.mesh!.meshData
 			},
 			pbrModel: {
-				materials: [assets.mat.whiteness],
+				materials: assets.model.plants.materials!,
 				castsShadows: true
 			}
 		});

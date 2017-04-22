@@ -1,4 +1,4 @@
-// ????, a Ludum Dare 38 Entry (Theme: ?)
+// ????, a Ludum Dare 38 Entry (Theme: A Small World)
 // (c) 2017 by Arthur Langereis (@zenmumbler)
 
 /// <reference path="../../stardazed/dist/stardazed.d.ts" />
@@ -252,7 +252,7 @@ class MainScene implements sd.SceneController {
 	boxFilter: render.FilterPass;
 	fxaaPass: render.FXAAPass;
 	mainFBO: render.FrameBuffer | undefined;
-	antialias = false;
+	antialias = true;
 
 	renderFrame(timeStep: number) {
 		if (this.mode_ < GameMode.Title) {

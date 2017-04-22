@@ -14,14 +14,19 @@ interface TextureAssets {
 	reflectCubeSpace: render.Texture;
 }
 
+interface ModelAssets {
+	plants: asset.Model;
+}
+
 interface Assets {
 	sound: SoundAssets;
 	mat: MaterialAssets;
 	tex: TextureAssets;
+	model: ModelAssets;
 }
 
 function loadAllAssets(rc: render.RenderContext, ac: audio.AudioContext, meshMgr: world.MeshManager, progress: (ratio: number) => void) {
-	const a = { mat: {}, sound: {}, tex: {} } as Assets;
+	const a = { mat: {}, sound: {}, tex: {}, model: {} } as Assets;
 
 	var totalAssets = 1, assetsLoaded = 0;
 	const loaded = (n = 1) => {
@@ -48,6 +53,18 @@ function loadAllAssets(rc: render.RenderContext, ac: audio.AudioContext, meshMgr
 		});
 	}
 
+	function loadLocalOBJ<K extends keyof ModelAssets>(path: string, k: K) {
+		return asset.loadOBJFile(localURL(path)).then(ag => {
+			loaded();
+			console.info("loaded obj", ag);
+			a.model[k] = ag.models[0];
+			totalAssets += ag.textures.length;
+			return asset.resolveTextures(rc, ag.textures).then(tex => {
+				loaded(tex.length);
+			});
+		});
+	}
+
 	function loadEnvCubeTex<K extends keyof TextureAssets>(dirPath: string, k: K) {
 		render.loadCubeTexture(rc, render.makeCubeMapPaths(dirPath, ".jpg")).then(texture => {
 			loaded();
@@ -60,12 +77,13 @@ function loadAllAssets(rc: render.RenderContext, ac: audio.AudioContext, meshMgr
 		a.tex[k2] = <any>envTexture;
 	}
 
-	const stuff: Promise<void>[] = [
+	const stuff: (void | Promise<void>)[] = [
 		// asset.loadSoundFile(ac, "data/sound/some_sound.mp3").then(buf => { a.sound.xxx = buf; loaded(); }),
 
 		// loadLocalMTL("data/mat/somemat.mtl", ["xxx"]),
+		loadLocalOBJ("data/models/roomtest2.obj", "plants"),
 
-		// loadEnvCubeTex("data/mat/galaxy/galaxy-", "envCubeSpace")
+		// loadEnvCubeTex("data/mat/miramar/miramar_", "envCubeSpace")
 	];
 	totalAssets = stuff.length;
 
@@ -73,7 +91,7 @@ function loadAllAssets(rc: render.RenderContext, ac: audio.AudioContext, meshMgr
 		makeReflectionMap("envCubeSpace", "reflectCubeSpace");
 
 		a.mat.whiteness = asset.makeMaterial("whiteness");
-		a.mat.whiteness.roughness = .8;
+		a.mat.whiteness.roughness = .6;
 
 		return a;
 	});
