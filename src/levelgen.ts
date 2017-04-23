@@ -8,10 +8,47 @@ function srgb8Color(r: number, g: number, b: number) {
 type LineSeg = sd.Float4;
 
 class Level {
-	public clipLines: LineSeg[] = [];
+	clipLines: LineSeg[] = [];
+	physicsWorld: Ammo.btDiscreteDynamicsWorld;
 
 	constructor(private rc: render.RenderContext, private ac: audio.AudioContext, private assets: Assets, private scene: world.Scene) {
+		(Ammo as any)().then(() => {
+			// init Ammo
+			const collisionConfiguration = new Ammo.btDefaultCollisionConfiguration();
+			const dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration);
+			const overlappingPairCache = new Ammo.btAxisSweep3(new Ammo.btVector3(-100,-100,-100), new Ammo.btVector3(100,100,100));
+			const solver = new Ammo.btSequentialImpulseConstraintSolver();
+
+			this.physicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
+			this.physicsWorld.setGravity( new Ammo.btVector3(0, -9.8, 0));
+		});
 	}
+
+	createMeshShape(vertexBuffer: meshdata.VertexBuffer, indexBuffer: meshdata.IndexBuffer) {
+		const posAttr = vertexBuffer.attrByRole(meshdata.VertexAttributeRole.Position)!;
+		const posView = new meshdata.VertexBufferAttributeView(vertexBuffer, posAttr);
+		const triView = new meshdata.IndexBufferTriangleView(indexBuffer);
+
+		const vertexCount = posView.count;
+		const baseVertex = posView.baseVertex;
+
+		const collMesh = new Ammo.btTriangleMesh();
+
+		triView.forEach((face: meshdata.TriangleProxy) => {
+			const posA = posView.copyItem(face.a() - baseVertex);
+			const posB = posView.copyItem(face.b() - baseVertex);
+			const posC = posView.copyItem(face.c() - baseVertex);
+
+			collMesh.addTriangle(
+				new Ammo.btVector3(posA[0], posA[1], posA[2]),
+				new Ammo.btVector3(posB[0], posB[1], posB[2]),
+				new Ammo.btVector3(posC[0], posC[1], posC[2])
+			);
+		});
+
+		return new Ammo.btBvhTriangleMeshShape(collMesh, true, true);
+	}
+
 
 	generate() {
 		const scene = this.scene;
@@ -70,6 +107,7 @@ class Level {
 			}
 		});
 
+		const levelModel = assets.model.plants;
 		const testObj = scene.makeEntity({
 			transform: {
 				position: [0, 0, 0],
@@ -77,13 +115,29 @@ class Level {
 			},
 			mesh: {
 				name: "test",
-				meshData: assets.model.plants.mesh!.meshData
+				meshData: levelModel.mesh!.meshData
 			},
 			pbrModel: {
-				materials: assets.model.plants.materials!,
+				materials: levelModel.materials!,
 				castsShadows: true
 			}
 		});
+
+		const levelVB = levelModel.mesh!.meshData.vertexBuffers[0];
+		const levelIB = levelModel.mesh!.meshData.indexBuffer!;
+		const levelCollShape = this.createMeshShape(levelVB, levelIB);
+
+		const levelTransform = new Ammo.btTransform();
+		levelTransform.setIdentity();
+		const body = new Ammo.btRigidBody(
+			new Ammo.btRigidBodyConstructionInfo(
+				0,
+				new Ammo.btDefaultMotionState(levelTransform),
+				levelCollShape,
+				new Ammo.btVector3(0, 0, 0)
+			)
+		);
+		this.physicsWorld.addRigidBody(body);
 
 		return Promise.resolve();
 	}
