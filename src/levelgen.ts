@@ -23,7 +23,43 @@ class Level {
 
 		const roomLight = scene.makeEntity({
 			transform: {
-				position: [2.5, 2.2, -2.5]
+				position: [3, 2.2, -6]
+			},
+			light: {
+				name: "bulb",
+				colour: [1, 1, 1],
+				type: asset.LightType.Point,
+				intensity: .5,
+				range: 4,
+			}
+		});
+		scene.makeEntity({
+			transform: {
+				position: [16, 2.2, -14]
+			},
+			light: {
+				name: "bulb",
+				colour: [1, 1, 1],
+				type: asset.LightType.Point,
+				intensity: .5,
+				range: 4,
+			}
+		});
+		scene.makeEntity({
+			transform: {
+				position: [30, 2.2, -3]
+			},
+			light: {
+				name: "bulb",
+				colour: [1, 1, 1],
+				type: asset.LightType.Point,
+				intensity: .5,
+				range: 4,
+			}
+		});
+		scene.makeEntity({
+			transform: {
+				position: [7, 2.2, -11]
 			},
 			light: {
 				name: "bulb",

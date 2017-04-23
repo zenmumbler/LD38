@@ -81,7 +81,7 @@ function loadAllAssets(rc: render.RenderContext, ac: audio.AudioContext, meshMgr
 		// asset.loadSoundFile(ac, "data/sound/some_sound.mp3").then(buf => { a.sound.xxx = buf; loaded(); }),
 
 		// loadLocalMTL("data/mat/somemat.mtl", ["xxx"]),
-		loadLocalOBJ("data/models/roomtest2.obj", "plants"),
+		loadLocalOBJ("data/models/hallway2.obj", "plants"),
 
 		// loadEnvCubeTex("data/mat/miramar/miramar_", "envCubeSpace")
 	];

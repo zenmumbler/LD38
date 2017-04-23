@@ -2,20 +2,18 @@
 ## Alias OBJ Material File
 # Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
 
+newmtl _auto_
+Ka 0.000000 0.000000 0.000000
+Kd 0.400000 0.400000 0.400000
+Ks 0.330000 0.330000 0.330000
+
+newmtl _auto_1
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.330000 0.330000 0.330000
+
 newmtl FrontColor
 Ka 0.000000 0.000000 0.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.330000 0.330000 0.330000
-
-newmtl Brick_Rough_Dark
-Ka 0.000000 0.000000 0.000000
-Kd 0.364706 0.301961 0.200000
-Ks 0.330000 0.330000 0.330000
-map_Kd roomtest/Brick_Rough_Dark.jpg
-
-newmtl Wood_Cherry_Original
-Ka 0.000000 0.000000 0.000000
-Kd 0.592157 0.337255 0.160784
-Ks 0.330000 0.330000 0.330000
-map_Kd roomtest/Wood_Cherry_Original.jpg
 
