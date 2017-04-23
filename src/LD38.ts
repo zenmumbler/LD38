@@ -2,6 +2,8 @@
 // (c) 2017 by Arthur Langereis (@zenmumbler)
 
 /// <reference path="../../stardazed/dist/stardazed.d.ts" />
+/// <reference path="../ext/ammo.d.ts" />
+
 /// <reference path="assets.ts" />
 /// <reference path="levelgen.ts" />
 /// <reference path="sfx.ts" />
