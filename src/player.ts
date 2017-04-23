@@ -235,7 +235,7 @@ class PlayerController {
 	}
 
 	step(timeStep: number) {
-		const maxAccel = 0.66;
+		const maxAccel = 0.55;
 		var accel = 0, sideAccel = 0;
 
 		if (io.keyboard.down(io.Key.UP) || io.keyboard.down(this.keyForKeyCommand(KeyCommand.Forward))) {

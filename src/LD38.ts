@@ -235,7 +235,7 @@ class MainScene implements sd.SceneController {
 		if (newMode !== GameMode.Loading) {
 			dom.show("#stage");
 			// this.sfx_.startMusic();
-			this.player_ = new PlayerController(this.rc.gl.canvas, [2.5, 1.5, -1], this.scene_, this.level_, this.sfx_);
+			this.player_ = new PlayerController(this.rc.gl.canvas, [2.5, 1.7, -1], this.scene_, this.level_, this.sfx_);
 		}
 
 		this.mode_ = newMode;
@@ -323,7 +323,7 @@ class MainScene implements sd.SceneController {
 			render.runRenderPass(this.rc, this.scene_.meshMgr, rpdMain, mainPassFBO, (renderPass) => {
 				const viewport = renderPass.viewport()!;
 				let camera: world.ProjectionSetup = {
-					projectionMatrix: mat4.perspective([], math.deg2rad(60), viewport.width / viewport.height, 0.1, 100),
+					projectionMatrix: mat4.perspective([], math.deg2rad(65), viewport.width / viewport.height, 0.1, 100),
 					viewMatrix: this.player_.view.viewMatrix
 				};
 
