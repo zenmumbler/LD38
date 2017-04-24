@@ -5,10 +5,7 @@ function srgb8Color(r: number, g: number, b: number) {
 	return [Math.pow(r / 255, 2.2), Math.pow(g / 255, 2.2), Math.pow(b / 255, 2.2)];
 }
 
-type LineSeg = sd.Float4;
-
 class Level {
-	clipLines: LineSeg[] = [];
 	physicsWorld: Ammo.btDiscreteDynamicsWorld;
 
 	constructor(private rc: render.RenderContext, private ac: audio.AudioContext, private assets: Assets, private scene: world.Scene) {
@@ -107,7 +104,20 @@ class Level {
 			}
 		});
 
-		const levelModel = assets.model.plants;
+		scene.makeEntity({
+			transform: {
+				position: [-1, 1.7, -7.5]
+			},
+			light: {
+				name: "bulb",
+				colour: [1, 1, 1],
+				type: asset.LightType.Point,
+				intensity: .5,
+				range: 4,
+			}
+		});
+
+		const levelModel = assets.model.hallway;
 		const testObj = scene.makeEntity({
 			transform: {
 				position: [0, 0, 0],
