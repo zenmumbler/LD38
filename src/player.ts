@@ -133,7 +133,64 @@ class PlayerView {
 	get dir() { return this.dir_; }
 	get dirXZ() { return [this.dir_[0], this.dir_[2]]; }
 	get rotation() { return this.rot_; }
-	get effectiveSpeed() { return this.effectiveSpeed_; }
+	get moving() { return this.effectiveSpeed_ > 0.01; }
+	get focusPos() { return vec3.add([], this.pos_, this.dir_); }
+	get viewMatrix() { return mat4.lookAt([], this.pos_, this.focusPos, this.up_); }
+}
+
+
+class PlayerViewAmmo {
+	private pos_ = [0, 0, 0];
+	private angleX_ = 0;
+	private angleY_ = Math.PI;
+	private rot_: sd.Float4;
+	private dir_ = [0, 0, -1];
+	private up_ = [0, 1, 0];
+
+	private shape_: Ammo.btCapsuleShapeZ;
+	private rigidBody_: Ammo.btRigidBody;
+	readonly HEIGHT = 1.7;
+	readonly MASS = 70;
+
+	constructor(initialPos: sd.Float3, private physicsWorld_: Ammo.btDiscreteDynamicsWorld) {
+		vec3.copy(this.pos_, initialPos);
+		this.rotate([0, 0]);
+
+		this.shape_ = new Ammo.btCapsuleShapeZ(0.3, this.HEIGHT); // 60cm diameter
+		const localInertia = new Ammo.btVector3(0, 0, 0);
+		this.shape_.calculateLocalInertia(this.MASS, localInertia);
+
+		const btTX = new Ammo.btTransform();
+		btTX.setOrigin(new Ammo.btVector3(this.pos_[0], this.pos_[1], this.pos_[2]));
+		btTX.setRotation(new Ammo.btQuaternion(this.rot_[0], this.rot_[1], this.rot_[2], this.rot_[3]));
+		this.rigidBody_ = new Ammo.btRigidBody(
+			new Ammo.btRigidBodyConstructionInfo(
+				this.MASS,
+				new Ammo.btDefaultMotionState(btTX),
+				this.shape_,
+				localInertia
+			)
+		);
+		this.physicsWorld_.addRigidBody(this.rigidBody_);
+	}
+
+	rotate(localRelXY: sd.Float2) {
+		this.angleX_ -= Math.PI * 1.3 * localRelXY[1];
+		this.angleX_ = math.clamp(this.angleX_, -Math.PI * 0.27, Math.PI * 0.21);
+		this.angleY_ += Math.PI * 1.8 * localRelXY[0];
+		this.rot_ = quat.fromEuler(0, this.angleY_, this.angleX_);
+		vec3.transformQuat(this.dir_, [0, 0, 1], this.rot_);
+		vec3.normalize(this.dir_, this.dir_);
+		vec3.transformQuat(this.up_, [0, 1, 0], this.rot_);
+		vec3.normalize(this.up_, this.up_);
+	}
+
+	get pos() { return this.pos_; }
+	get posXZ() { return [this.pos_[0], this.pos_[2]]; }
+	get dir() { return this.dir_; }
+	get dirXZ() { return [this.dir_[0], this.dir_[2]]; }
+	get rotation() { return this.rot_; }
+	get moving() { return false; }
 	get focusPos() { return vec3.add([], this.pos_, this.dir_); }
 	get viewMatrix() { return mat4.lookAt([], this.pos_, this.focusPos, this.up_); }
 }
@@ -157,6 +214,7 @@ const enum KeyCommand {
 
 class PlayerController {
 	view: PlayerView;
+	ammoView: PlayerViewAmmo;
 	private vpWidth_: number;
 	private vpHeight_: number;
 	private tracking_ = false;
@@ -165,6 +223,7 @@ class PlayerController {
 
 	constructor(sensingElem: HTMLElement, initialPos: sd.Float3, private scene: world.Scene, private level: Level, private sfx: Sound) {
 		this.view = new PlayerView(initialPos, level.clipLines);
+		this.ammoView = new PlayerViewAmmo(initialPos, level.physicsWorld);
 
 		this.vpWidth_ = sensingElem.offsetWidth;
 		this.vpHeight_ = sensingElem.offsetHeight;
@@ -221,7 +280,7 @@ class PlayerController {
 	private stepSoundTimer_ = -1;
 
 	handleStepSounds() {
-		if (this.view.effectiveSpeed > 0.01) {
+		if (this.view.moving) {
 			if (this.stepSoundTimer_ == -1) {
 				this.stepSoundTimer_ = setInterval(() => { this.sfx.play(SFX.FootStep); }, 500);
 			}
