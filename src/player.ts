@@ -3,65 +3,7 @@
 
 /// <reference path="levelgen.ts" />
 
-type ContactPoints = number[][];
-
-function intersectCircleLineSeg(C: sd.ConstFloat2, r: number, line: LineSeg): ContactPoints | null {
-	const E = [line[0], line[1]];
-	const L = [line[2], line[3]];
-	const d = vec2.sub([], L, E);
-	const f = vec2.sub([], E, C);
-	const a = vec2.dot(d, d);
-	const b = 2 * vec2.dot(f, d);
-	const c = vec2.dot(f, f) - r * r;
-
-	let discriminant = b * b - 4 * a * c;
-	if (discriminant < 0) {
-		// no intersection
-		return null;
-	}
-	else {
-		const result: ContactPoints = [];
-		// ray didn't totally miss sphere,
-		// so there is a solution to
-		// the equation.
-		discriminant = Math.sqrt(discriminant);
-
-		// either solution may be on or off the ray so need to test both
-		// t1 is always the smaller value, because BOTH discriminant and
-		// a are nonnegative.
-		const t1 = (-b - discriminant) / (2 * a);
-		const t2 = (-b + discriminant) / (2 * a);
-
-		// 3x HIT cases:
-		//          -o->             --|-->  |            |  --|->
-		// Impale(t1 hit,t2 hit), Poke(t1 hit,t2>1), ExitWound(t1<0, t2 hit),
-
-		// 3x MISS cases:
-		//       ->  o                     o ->              | -> |
-		// FallShort (t1>1,t2>1), Past (t1<0,t2<0), CompletelyInside(t1<0, t2>1)
-
-		if (t1 >= 0 && t1 <= 1) {
-			// t1 is the intersection, and it's closer than t2
-			// (since t1 uses -b - discriminant)
-			// Impale, Poke
-
-			result.push(vec2.scaleAndAdd([], E, d, t1));
-		}
-
-		// here t1 didn't intersect so we are either started
-		// inside the sphere or completely past it
-		if (t2 >= 0 && t2 <= 1) {
-			// ExitWound
-			result.push(vec2.scaleAndAdd([], E, d, t2));
-		}
-
-		// no intn: FallShort, Past, CompletelyInside
-		return result.length === 0 ? null : result;
-	}
-}
-
-
-class PlayerView {
+class PlayerViewAmmo {
 	private pos_ = [0, 0, 0];
 	private angleX_ = 0;
 	private angleY_ = Math.PI;
@@ -71,84 +13,10 @@ class PlayerView {
 	private velocity_ = [0, 0, 0];
 	private effectiveSpeed_ = 0;
 
-	constructor(initialPos: sd.Float3, private clipLines: LineSeg[]) {
-		vec3.copy(this.pos_, initialPos);
-		this.rotate([0, 0]);
-	}
-
-	private clipMovement(a: sd.Float3, b: sd.Float3): sd.Float3 {
-		const posXZ = [b[0], b[2]];
-		for (const cl of this.clipLines) {
-			const ip = intersectCircleLineSeg(posXZ, .25, cl);
-			if (ip) {
-				if (ip.length == 2) {
-					const center = vec2.lerp([], ip[0], ip[1], .5);
-					const pdir = vec2.sub([], posXZ, center);
-					const pen = .25 / vec2.length(pdir);
-					vec2.scaleAndAdd(posXZ, posXZ, pdir, pen - 1);
-				}
-			}
-		}
-
-		// reconstruct 3d pos
-		return [posXZ[0], b[1], posXZ[1]];
-	}
-
-	update(timeStep: number, acceleration: number, sideAccel: number) {
-		const fwdXZ = vec3.normalize([], [this.dir_[0], 0, this.dir_[2]]);
-		const rightXZ = vec3.cross([], fwdXZ, [0, 1, 0]);
-
-		vec3.scaleAndAdd(this.velocity_, this.velocity_, fwdXZ, acceleration * timeStep);
-		vec3.scaleAndAdd(this.velocity_, this.velocity_, rightXZ, sideAccel * timeStep);
-
-		if (vec3.length(this.velocity_) >= 0.001) {
-			const targetPos = vec3.add([], this.pos_, this.velocity_);
-			const clippedPos = this.clipMovement(this.pos, targetPos);
-			vec3.sub(this.velocity_, clippedPos, this.pos_);
-			vec3.copy(this.pos_, clippedPos);
-
-			this.effectiveSpeed_ = vec3.length(this.velocity_);
-		}
-
-		vec3.scale(this.velocity_, this.velocity_, 0.85);
-		if (vec3.length(this.velocity_) < 0.001) {
-			vec3.set(this.velocity_, 0, 0, 0);
-			this.effectiveSpeed_ = 0;
-		}
-	}
-
-	rotate(localRelXY: sd.Float2) {
-		this.angleX_ -= Math.PI * 1.3 * localRelXY[1];
-		this.angleX_ = math.clamp(this.angleX_, -Math.PI * 0.27, Math.PI * 0.21);
-		this.angleY_ += Math.PI * 1.8 * localRelXY[0];
-		this.rot_ = quat.fromEuler(0, this.angleY_, this.angleX_);
-		vec3.transformQuat(this.dir_, [0, 0, 1], this.rot_);
-		vec3.normalize(this.dir_, this.dir_);
-		vec3.transformQuat(this.up_, [0, 1, 0], this.rot_);
-		vec3.normalize(this.up_, this.up_);
-	}
-
-	get pos() { return this.pos_; }
-	get posXZ() { return [this.pos_[0], this.pos_[2]]; }
-	get dir() { return this.dir_; }
-	get dirXZ() { return [this.dir_[0], this.dir_[2]]; }
-	get rotation() { return this.rot_; }
-	get moving() { return this.effectiveSpeed_ > 0.01; }
-	get focusPos() { return vec3.add([], this.pos_, this.dir_); }
-	get viewMatrix() { return mat4.lookAt([], this.pos_, this.focusPos, this.up_); }
-}
-
-
-class PlayerViewAmmo {
-	private pos_ = [0, 0, 0];
-	private angleX_ = 0;
-	private angleY_ = Math.PI;
-	private rot_: sd.Float4;
-	private dir_ = [0, 0, -1];
-	private up_ = [0, 1, 0];
-
 	private shape_: Ammo.btCapsuleShapeZ;
 	private rigidBody_: Ammo.btRigidBody;
+	private tempBV3_: Ammo.btVector3;
+	private tempTX_: Ammo.btTransform;
 	readonly HEIGHT = 1.7;
 	readonly MASS = 70;
 
@@ -156,12 +24,12 @@ class PlayerViewAmmo {
 		vec3.copy(this.pos_, initialPos);
 		this.rotate([0, 0]);
 
-		this.shape_ = new Ammo.btCapsuleShapeZ(0.3, this.HEIGHT); // 60cm diameter
+		this.shape_ = new Ammo.btCapsuleShape(0.2, this.HEIGHT); // 60cm diameter
 		const localInertia = new Ammo.btVector3(0, 0, 0);
 		this.shape_.calculateLocalInertia(this.MASS, localInertia);
 
 		const btTX = new Ammo.btTransform();
-		btTX.setOrigin(new Ammo.btVector3(this.pos_[0], this.pos_[1], this.pos_[2]));
+		btTX.setOrigin(new Ammo.btVector3(this.pos_[0], this.pos_[1] + 0.01, this.pos_[2]));
 		btTX.setRotation(new Ammo.btQuaternion(this.rot_[0], this.rot_[1], this.rot_[2], this.rot_[3]));
 		this.rigidBody_ = new Ammo.btRigidBody(
 			new Ammo.btRigidBodyConstructionInfo(
@@ -171,7 +39,13 @@ class PlayerViewAmmo {
 				localInertia
 			)
 		);
+		// this.rigidBody_.setCollisionFlags(this.rigidBody_.getCollisionFlags() | Ammo.CollisionFlags.CF_KINEMATIC_OBJECT);
+		this.rigidBody_.setAngularFactor(new Ammo.btVector3(0, 1, 0));
+		this.rigidBody_.setActivationState(Ammo.ActivationState.DISABLE_DEACTIVATION);
 		this.physicsWorld_.addRigidBody(this.rigidBody_);
+
+		this.tempBV3_ = new Ammo.btVector3();
+		this.tempTX_ = new Ammo.btTransform();
 	}
 
 	rotate(localRelXY: sd.Float2) {
@@ -185,6 +59,62 @@ class PlayerViewAmmo {
 		vec3.normalize(this.up_, this.up_);
 	}
 
+	update(timeStep: number, acceleration: number, sideAccel: number) {
+		const fwdXZ = vec3.normalize([], [this.dir_[0], 0, this.dir_[2]]);
+		const rightXZ = vec3.cross([], fwdXZ, [0, 1, 0]);
+
+		vec3.scaleAndAdd(this.velocity_, this.velocity_, fwdXZ, acceleration * timeStep);
+		vec3.scaleAndAdd(this.velocity_, this.velocity_, rightXZ, sideAccel * timeStep);
+
+		vec3.scale(this.velocity_, this.velocity_, 0.85);
+		if (vec3.length(this.velocity_) < 0.001) {
+			vec3.set(this.velocity_, 0, 0, 0);
+		}
+
+		const lv = this.rigidBody_.getLinearVelocity();
+		this.tempBV3_.setValue(this.velocity_[0], lv.y(), this.velocity_[2]);
+		this.rigidBody_.setLinearVelocity(this.tempBV3_);
+
+		this.physicsWorld_.stepSimulation(timeStep, 2);
+
+		const ms = this.rigidBody_.getMotionState();
+		ms.getWorldTransform(this.tempTX_);
+		const pos = this.tempTX_.getOrigin();
+		// const rot = this.tempTX_.getRotation();
+		this.pos_[0] = pos.x();
+		this.pos_[1] = pos.y();
+		this.pos_[2] = pos.z();
+
+		// const newVel = this.rigidBody_.getLinearVelocity();
+		// this.velocity_[0] = newVel.x();
+		// this.velocity_[1] = newVel.y();
+		// this.velocity_[2] = newVel.z();
+
+		// this.effectiveSpeed_ = vec3.length(this.velocity_);
+	}
+
+	// step(timeStep: number, accel: number, sideForce: number) {
+	// 	const fwdXZ = vec3.normalize([], [this.dir_[0], 0, this.dir_[2]]);
+	// 	const rightXZ = vec3.cross([], fwdXZ, [0, 1, 0]);
+
+	// 	vec3.scale(fwdXZ, fwdXZ, force);
+	// 	vec3.scale(rightXZ, rightXZ, force);
+
+	// 	const lv = this.rigidBody_.getLinearVelocity();
+	// 	this.tempBV3_.setValue(fwdXZ[0], lv.y(), fwdXZ[2]);
+	// 	this.rigidBody_.setLinearVelocity(this.tempBV3_);
+
+	// 	this.physicsWorld_.stepSimulation(timeStep, 2);
+
+	// 	const ms = this.rigidBody_.getMotionState();
+	// 	ms.getWorldTransform(this.tempTX_);
+	// 	const pos = this.tempTX_.getOrigin();
+	// 	// const rot = this.tempTX_.getRotation();
+	// 	this.pos_[0] = pos.x();
+	// 	this.pos_[1] = pos.y();
+	// 	this.pos_[2] = pos.z();
+	// }
+
 	get pos() { return this.pos_; }
 	get posXZ() { return [this.pos_[0], this.pos_[2]]; }
 	get dir() { return this.dir_; }
@@ -192,7 +122,13 @@ class PlayerViewAmmo {
 	get rotation() { return this.rot_; }
 	get moving() { return false; }
 	get focusPos() { return vec3.add([], this.pos_, this.dir_); }
-	get viewMatrix() { return mat4.lookAt([], this.pos_, this.focusPos, this.up_); }
+	get viewMatrix() {
+		return mat4.lookAt([],
+			[this.pos_[0], this.pos_[1] + 0.2, this.pos_[2]],
+			[this.focusPos[0], this.focusPos[1] + 0.2, this.focusPos[2]],
+			this.up_
+		);
+	}
 }
 
 
@@ -213,8 +149,7 @@ const enum KeyCommand {
 
 
 class PlayerController {
-	view: PlayerView;
-	ammoView: PlayerViewAmmo;
+	view: PlayerViewAmmo;
 	private vpWidth_: number;
 	private vpHeight_: number;
 	private tracking_ = false;
@@ -222,8 +157,7 @@ class PlayerController {
 	private keyboardType_ = KeyboardType.QWERTY;
 
 	constructor(sensingElem: HTMLElement, initialPos: sd.Float3, private scene: world.Scene, private level: Level, private sfx: Sound) {
-		this.view = new PlayerView(initialPos, level.clipLines);
-		this.ammoView = new PlayerViewAmmo(initialPos, level.physicsWorld);
+		this.view = new PlayerViewAmmo(initialPos, level.physicsWorld);
 
 		this.vpWidth_ = sensingElem.offsetWidth;
 		this.vpHeight_ = sensingElem.offsetHeight;
@@ -294,7 +228,7 @@ class PlayerController {
 	}
 
 	step(timeStep: number) {
-		const maxAccel = 0.55;
+		const maxAccel = 30;
 		var accel = 0, sideAccel = 0;
 
 		if (io.keyboard.down(io.Key.UP) || io.keyboard.down(this.keyForKeyCommand(KeyCommand.Forward))) {
@@ -311,6 +245,7 @@ class PlayerController {
 		}
 
 		this.view.update(timeStep, accel, sideAccel);
+
 		this.handleStepSounds();
 	}
 }
