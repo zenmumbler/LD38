@@ -109,7 +109,19 @@ class Level {
 				position: [-1, 1.7, -7.5]
 			},
 			light: {
-				name: "bulb",
+				name: "bedroom light",
+				colour: [1, 1, 1],
+				type: asset.LightType.Point,
+				intensity: .5,
+				range: 4,
+			}
+		});
+		scene.makeEntity({
+			transform: {
+				position: [26.5, 1.7, -18]
+			},
+			light: {
+				name: "office light",
 				colour: [1, 1, 1],
 				type: asset.LightType.Point,
 				intensity: .5,
