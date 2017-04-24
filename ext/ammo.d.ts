@@ -1,29 +1,108 @@
 declare namespace Ammo {
 
-	export class btDefaultCollisionConfiguration {}
+	export class btVector3 {
+		constructor();
+		constructor(x: number, y: number, z: number);
 
-	export class btCollisionDispatcher {
+		x(): number;
+		setX(x: number): void;
+		y(): number;
+		setY(y: number): void;
+		z(): number;
+		setZ(z: number): void;
+		setValue(x: number, y: number, z: number): void;
+
+		normalize(): void;
+		length(): number;
+		dot(v: btVector3): number;
+
+		op_add(v: btVector3): btVector3;
+		op_sub(v: btVector3): btVector3;
+		op_mul(v: btVector3): btVector3;
+
+		rotate(wAxis: btVector3, angle: number): btVector3;
+	}
+
+	export class btCollisionConfiguration {}
+
+	export class btDefaultCollisionConfiguration extends btCollisionConfiguration {}
+
+	export abstract class btDispatcher {}
+
+	export class btCollisionDispatcher extends btDispatcher {
 		constructor(c: btDefaultCollisionConfiguration);
 	}
 
-	export class btVector3 {
-		x(): number;
-		y(): number;
-		z(): number;
-		constructor(x: number, y: number, z: number);
-	}
+	export abstract class btBroadphaseInterface {}
 
-	export class btAxisSweep3 {
+	export class btAxisSweep3 extends btBroadphaseInterface {
 		constructor(min: btVector3, max: btVector3);
 	}
 
-	export class btSequentialImpulseConstraintSolver {}
 
-	export class btDiscreteDynamicsWorld {
-		constructor(a: btCollisionDispatcher, b: btAxisSweep3, c: btSequentialImpulseConstraintSolver, d: btDefaultCollisionConfiguration);
-		setGravity(v: btVector3): void;
-		addRigidBody(b: btRigidBody): void;
-		stepSimulation(n1: number, n2: number): void;
+	export abstract class btConstraintSolver {}
+
+	export class btSequentialImpulseConstraintSolver extends btConstraintSolver {}
+
+	export abstract class ContactResultCallback {}
+	export abstract class ConvexResultCallback {}
+	export abstract class RayResultCallback {}
+
+	export const enum CollisionFilterGroups {
+		DefaultFilter = 1,
+		StaticFilter = 2,
+		KinematicFilter = 4,
+		DebrisFilter = 8,
+		SensorTrigger = 16,
+		CharacterFilter = 32,
+		AllFilter = -1
+	}
+
+	export abstract class btOverlappingPairCache {}
+
+	export interface btDispatcherInfo {}
+
+	export class btCollisionWorld {
+		constructor(dispatcher: btDispatcher, broadphasePairCache: btBroadphaseInterface, collisionConfiguration: btCollisionConfiguration);
+
+		contactPairTest(colObjA: btCollisionObject, colObjB: btCollisionObject, resultCallback: ContactResultCallback): void;
+		contactTest(colObj: btCollisionObject, resultCallback: ContactResultCallback): void;
+		convexSweepTest(castShape: btConvexShape, from: btTransform, to: btTransform, resultCallback: ConvexResultCallback, allowedCcdPenetration?: number): void;
+		rayTest(rayFromWorld: btVector3, rayToWorld: btVector3, resultCallback: RayResultCallback): void;
+
+		addCollisionObject(collisionObject: btCollisionObject, collisionFilterGroup?: CollisionFilterGroups, collisionFilterMask?: CollisionFilterGroups);
+
+		getBroadphase(): btBroadphaseInterface;
+		getDispatchInfo(): btDispatcherInfo;
+		getDispatcher(): btDispatcher;
+		getPairCache(): btOverlappingPairCache;
+	}
+
+	export interface btContactSolverInfo {}
+	export abstract class btActionInterface {}
+	export abstract class btTypedConstraint {}
+
+	export abstract class btDynamicsWorld extends btCollisionWorld {
+		addAction(action: btActionInterface): void;
+		removeAction(action: btActionInterface): void;
+
+		addConstraint(constraint: btTypedConstraint, disableCollisionsBetweenLinkedBodies?: boolean): void;
+		removeConstraint(constraint: btTypedConstraint): void;
+
+		addRigidBody(body: btRigidBody): void;
+		addRigidBody(body: btRigidBody, group: number, mask: number): void;
+		removeRigidBody(body: btRigidBody): void;
+
+		getGravity(): btVector3;
+		setGravity(gravity: btVector3): void;
+
+		getSolverInfo(): btContactSolverInfo;
+
+		stepSimulation (timeStep: number, maxSubSteps?: number, fixedTimeStep?: number): void;
+	}
+
+	export class btDiscreteDynamicsWorld extends btDynamicsWorld {
+		constructor(a: btDispatcher, b: btBroadphaseInterface, c: btConstraintSolver, d: btCollisionConfiguration);
 	}
 
 	export class btCollisionShape {
