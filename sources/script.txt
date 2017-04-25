@@ -1,0 +1,65 @@
+overlay: Day 862
+fade in
+wake up - bedroom (not in bed, but in a corner)
+say: *sigh*
+
+* objects in bedroom:
+- book
+	title: Operator Manual
+	interact:
+		say:
+			> if not have_dark_opal code
+				Like this is gonna save me. A manual.
+				They made it this big just to screw with me.
+				Can't find a damn thing in here.
+			> if not have_ls_page_nr
+				I don't have TIME to look at all of this. I 
+- bed
+	inspect:
+		I can't.. I can't have them coming for me again...
+		They come at night, mostly. And it's,.. it's always night.
+
+> mannequin is in front of storage
+> beeping is to be heard from office
+interact:
+	P: What's up?
+	M: ...
+	P: Don't.. don't do that.
+	M: ...
+	P: Fine.. what, is that noise.. is that back AGAIN?
+
+> door to exit is closed
+> office is open
+
+> beeping is the command console
+* objects in room:
+- console
+	> console display shows text:
+		Orders: run protocol "Dark Opal"
+		Received: day 857
+	interact:
+		> beeping stops
+		> speak:
+			I know! I KNOW! I just.. can't remember.
+		> mannequin moves to exit
+		> set flag: help_protocols
+
+* objects in protocol room
+	- big screen, has texture of many buttony things or something
+		interact:
+			What do I even do with this thing?
+
+* objects in storage
+	- Dark Opal protocol (note)
+		interact:
+			[...]
+			The Dark Opal Protocol shall only be initiated by order of High Command.
+			The Operator understands that the protocol has an indiscriminate and high-yield payload that will result in the Operator's inability to return to the surface.
+			The Dark Opal Protocol therefore includes the Local Storm protocol by default, though this can be disabled beforehand with the proper counter-protocol, refer to page...
+			[illegible]
+
+			The Dark Opal Protocol can be initiated if and only when ordered by entering the following command codes:
+			[the rest is just a bunch of numbers and letters]
+			> set flag: have_dark_opal_code
+			say: Fine, I got the stupid piece of paper. 
+
