@@ -68,7 +68,7 @@ Pm 0
 newmtl Stone_Brushed_Khaki
 map_Kd hallway2b/Books_A.jpg
 norm hallway2b/Books_N.jpg
-Pr 0.95
+Pr 0.85
 Pm 0
 
 newmtl Metal_Corrugated_Shiny
