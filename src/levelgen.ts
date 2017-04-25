@@ -56,76 +56,74 @@ class Level {
 		const ac = this.ac;
 
 		const roomLight = scene.makeEntity({
-			transform: {
-				position: [3, 2.2, -6]
-			},
+			transform: { position: [3, 2.2, -6] },
 			light: {
-				name: "bulb",
-				colour: [1, 1, 1],
-				type: asset.LightType.Point,
-				intensity: .5,
-				range: 4,
+				name: "hallway-bedroom", colour: [1, 1, 1], type: asset.LightType.Point,
+				intensity: .5, range: 4,
 			}
 		});
 		scene.makeEntity({
-			transform: {
-				position: [16, 2.2, -14]
-			},
+			transform: { position: [9, 2.2, -12] },
 			light: {
-				name: "bulb",
-				colour: [1, 1, 1],
-				type: asset.LightType.Point,
-				intensity: .5,
-				range: 4,
+				name: "hallway-storage", colour: [1, 1, 1], type: asset.LightType.Point,
+				intensity: .5, range: 4,
 			}
 		});
 		scene.makeEntity({
-			transform: {
-				position: [30, 2.2, -3]
-			},
+			transform: { position: [16, 2.2, -14] },
 			light: {
-				name: "bulb",
-				colour: [1, 1, 1],
-				type: asset.LightType.Point,
-				intensity: .5,
-				range: 4,
+				name: "hallway-exit", colour: [1, 1, 1], type: asset.LightType.Point,
+				intensity: .5, range: 4,
 			}
 		});
 		scene.makeEntity({
-			transform: {
-				position: [7, 2.2, -11]
-			},
+			transform: { position: [23, 2.2, -12] },
 			light: {
-				name: "bulb",
-				colour: [1, 1, 1],
-				type: asset.LightType.Point,
-				intensity: .5,
-				range: 4,
+				name: "hallway-office", colour: [1, 1, 1], type: asset.LightType.Point,
+				intensity: .5, range: 4,
+			}
+		});
+		scene.makeEntity({
+			transform: { position: [29, 2.2, -6] },
+			light: {
+				name: "hallway-protocol", colour: [1, 1, 1], type: asset.LightType.Point,
+				intensity: .5, range: 4,
 			}
 		});
 
 		scene.makeEntity({
-			transform: {
-				position: [-1, 1.7, -7.5]
-			},
+			transform: { position: [-2.8, 1.7, -6.3] },
 			light: {
-				name: "bedroom light",
-				colour: [1, 1, 1],
-				type: asset.LightType.Point,
-				intensity: .5,
-				range: 4,
+				name: "bedroom light", colour: [1, 1, 1], type: asset.LightType.Point,
+				intensity: .15, range: 2.0,
 			}
 		});
 		scene.makeEntity({
-			transform: {
-				position: [26.5, 1.7, -18]
-			},
+			transform: { position: [3.5, 1.7, -13.5] },
 			light: {
-				name: "office light",
-				colour: [1, 1, 1],
-				type: asset.LightType.Point,
-				intensity: .5,
-				range: 4,
+				name: "storage light", colour: [1, 1, 1], type: asset.LightType.Point,
+				intensity: .4, range: 3,
+			}
+		});
+		scene.makeEntity({
+			transform: { position: [25.5, 1.7, -15] },
+			light: {
+				name: "office light", colour: [1, 1, 1], type: asset.LightType.Point,
+				intensity: .5, range: 4,
+			}
+		});
+		scene.makeEntity({
+			transform: { position: [33.5, 1.7, -8] },
+			light: {
+				name: "protocol light", colour: [1, 1, 1], type: asset.LightType.Point,
+				intensity: .2, range: 1.5,
+			}
+		});
+		scene.makeEntity({
+			transform: { position: [16.0, 1.7, -40] },
+			light: {
+				name: "exit light", colour: [1, .2, .2], type: asset.LightType.Point,
+				intensity: .25, range: 2.5,
 			}
 		});
 
