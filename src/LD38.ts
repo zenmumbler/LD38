@@ -113,9 +113,6 @@ class MainScene implements sd.SceneController {
 	private sfx_: Sound;
 	private level_: Level;
 
-	private skyBox_: world.Skybox;
-	private glowLight_: world.EntityInfo;
-
 	private player_: PlayerController;
 	private mode_ = GameMode.None;
 
@@ -134,8 +131,6 @@ class MainScene implements sd.SceneController {
 			this.assets_ = assets;
 			this.sfx_.setAssets(assets.sound);
 			console.info("ASSETS", assets);
-
-			this.makeSkybox();
 
 			this.level_ = new Level(rc, ac, assets, this.scene_);
 			this.level_.generate().then(() => {
@@ -203,12 +198,6 @@ class MainScene implements sd.SceneController {
 
 	}
 
-	makeSkybox() {
-		const sb = this.scene_.makeEntity();
-		this.skyBox_ = new world.Skybox(this.rc, this.scene_.transformMgr, this.scene_.meshMgr, this.assets_.tex.envCubeSpace);
-		this.skyBox_.setEntity(sb.entity);
-	}
-
 
 	resume() {
 		if (this.mode_ >= GameMode.Title) {
@@ -237,7 +226,7 @@ class MainScene implements sd.SceneController {
 		if (newMode !== GameMode.Loading) {
 			dom.show("#stage");
 			// this.sfx_.startMusic();
-			this.player_ = new PlayerController(this.rc.gl.canvas, [2.5, 1.7, -1], this.scene_, this.level_, this.sfx_);
+			this.player_ = new PlayerController(this.rc.gl.canvas, [2.5, 1.0, -1], this.scene_, this.level_, this.sfx_);
 		}
 
 		this.mode_ = newMode;
@@ -331,12 +320,10 @@ class MainScene implements sd.SceneController {
 
 				this.scene_.lightMgr.prepareLightsForRender(this.scene_.lightMgr.allEnabled(), camera, viewport);
 
-				renderPass.setDepthTest(render.DepthTest.Less);
+				renderPass.setDepthTest(render.DepthTest.LessOrEqual);
 				renderPass.setFaceCulling(render.FaceCulling.Back);
 
 				this.scene_.pbrModelMgr.draw(this.scene_.pbrModelMgr.all(), renderPass, camera, spotShadow, world.PBRLightingQuality.CookTorrance, this.assets_.tex.reflectCubeSpace);
-
-				this.skyBox_.draw(renderPass, camera);
 			});
 
 			if (this.antialias) {
@@ -357,14 +344,6 @@ class MainScene implements sd.SceneController {
 			// if (io.keyboard.pressed(io.Key.O)) {
 			// 	this.SHADQUAD = !this.SHADQUAD;
 			// }
-
-			if (io.keyboard.pressed(io.Key.X)) {
-				this.antialias = !this.antialias;
-			}
-
-			if (this.skyBox_) {
-				this.skyBox_.setCenter(this.player_.view.pos);
-			}
 		}
 	}
 }
