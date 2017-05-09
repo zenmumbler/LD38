@@ -50,7 +50,7 @@ class PlayerViewAmmo {
 
 	rotate(localRelXY: sd.Float2) {
 		this.angleX_ -= Math.PI * 1.3 * localRelXY[1];
-		this.angleX_ = math.clamp(this.angleX_, -Math.PI * 0.20, Math.PI * 0.20);
+		this.angleX_ = math.clamp(this.angleX_, -Math.PI * 0.3, Math.PI * 0.3);
 		this.angleY_ += Math.PI * 1.8 * localRelXY[0];
 		this.rot_ = quat.fromEuler(0, this.angleY_, this.angleX_);
 		vec3.transformQuat(this.dir_, [0, 0, 1], this.rot_);
