@@ -3,6 +3,7 @@
 var Ammo = function(Ammo) {
   Ammo = Ammo || {};
   var Module = Ammo;
+  Module.TOTAL_MEMORY = 134217728;
 
 var c;c||(c=eval("(function() { try { return Ammo || {} } catch(e) { return {} } })()"));var aa={},ba;for(ba in c)c.hasOwnProperty(ba)&&(aa[ba]=c[ba]);var ca=!1,da=!1,ea=!1,fa=!1;
 if(c.ENVIRONMENT)if("WEB"===c.ENVIRONMENT)ca=!0;else if("WORKER"===c.ENVIRONMENT)da=!0;else if("NODE"===c.ENVIRONMENT)ea=!0;else if("SHELL"===c.ENVIRONMENT)fa=!0;else throw Error("The provided Module['ENVIRONMENT'] value is not valid. It must be one of: WEB|WORKER|NODE|SHELL.");else ca="object"===typeof window,da="function"===typeof importScripts,ea="object"===typeof process&&"function"===typeof require&&!ca&&!da,fa=!ca&&!ea&&!da;
