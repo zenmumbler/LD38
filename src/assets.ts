@@ -81,7 +81,7 @@ function loadAllAssets(rc: render.RenderContext, ac: audio.AudioContext, meshMgr
 		// asset.loadSoundFile(ac, "data/sound/some_sound.mp3").then(buf => { a.sound.xxx = buf; loaded(); }),
 
 		// loadLocalMTL("data/mat/somemat.mtl", ["xxx"]),
-		loadLocalOBJ("data/models/hallway2.obj", "hallway"),
+		loadLocalOBJ("data/models/sponza.obj", "hallway"),
 
 		loadEnvCubeTex("data/models/hallway2b/grimmnight/", "envCubeSpace")
 	];
@@ -89,6 +89,9 @@ function loadAllAssets(rc: render.RenderContext, ac: audio.AudioContext, meshMgr
 
 	return Promise.all(stuff).then(() => {
 		makeReflectionMap("envCubeSpace", "reflectCubeSpace");
+
+		// model seems to be in cm scale
+		sd.meshdata.scale(a.model.hallway.mesh!.meshData, [0.01, 0.01, 0.01]);
 
 		a.mat.whiteness = asset.makeMaterial("whiteness");
 		a.mat.whiteness.roughness = .6;

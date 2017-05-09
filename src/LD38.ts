@@ -1,7 +1,7 @@
 // ????, a Ludum Dare 38 Entry (Theme: A Small World)
 // (c) 2017 by Arthur Langereis (@zenmumbler)
 
-/// <reference path="../../stardazed/dist/stardazed.d.ts" />
+/// <reference path="../ext/stardazed.d.ts" />
 /// <reference path="../ext/ammo.d.ts" />
 
 /// <reference path="assets.ts" />
@@ -308,7 +308,7 @@ class MainScene implements sd.SceneController {
 		if (! this.SHADQUAD) {
 			// -- main forward pass
 			let rpdMain = render.makeRenderPassDescriptor();
-			vec4.set(rpdMain.clearColour, 0, 0, 0, 1);
+			vec4.set(rpdMain.clearColour, 1, 1, 1, 1);
 			rpdMain.clearMask = render.ClearMask.ColourDepth;
 
 			render.runRenderPass(this.rc, this.scene_.meshMgr, rpdMain, mainPassFBO, (renderPass) => {
