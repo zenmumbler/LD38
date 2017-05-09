@@ -50,7 +50,7 @@ class PlayerViewAmmo {
 
 	rotate(localRelXY: sd.Float2) {
 		this.angleX_ -= Math.PI * 1.3 * localRelXY[1];
-		this.angleX_ = math.clamp(this.angleX_, -Math.PI * 0.27, Math.PI * 0.21);
+		this.angleX_ = math.clamp(this.angleX_, -Math.PI * 0.20, Math.PI * 0.20);
 		this.angleY_ += Math.PI * 1.8 * localRelXY[0];
 		this.rot_ = quat.fromEuler(0, this.angleY_, this.angleX_);
 		vec3.transformQuat(this.dir_, [0, 0, 1], this.rot_);
@@ -84,6 +84,10 @@ class PlayerViewAmmo {
 		this.pos_[0] = pos.x();
 		this.pos_[1] = pos.y();
 		this.pos_[2] = pos.z();
+
+		if (io.keyboard.pressed(io.Key.SPACE)) {
+			this.rigidBody_.applyCentralForce(new Ammo.btVector3(0, 20000, 0));
+		}
 
 		// const newVel = this.rigidBody_.getLinearVelocity();
 		// this.velocity_[0] = newVel.x();
