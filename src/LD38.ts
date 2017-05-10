@@ -106,6 +106,16 @@ function drawFSQ(rc: render.RenderContext, meshMgr: world.MeshManager, tex: rend
 }
 
 
+function posterizePass(rc: render.RenderContext, meshMgr: world.MeshManager, w: number, h: number) {
+	return new render.FilterPass(rc, meshMgr, w, h, render.FBOPixelComponent.Float, `
+		vec2 screen = gl_FragCoord.xy / vec2(1280, 720);
+		vec2 effect = vec2(1.0) - pow(screen - .5, vec2(4.0)) * 16.0;
+		// effect = 2.0 * effect;
+		return get(0, 0) * (effect.x * effect.y);
+	`);
+}
+
+
 
 class MainScene implements sd.SceneController {
 	private scene_: world.Scene;
@@ -242,8 +252,8 @@ class MainScene implements sd.SceneController {
 	downsample64: render.FilterPass;
 	boxFilter: render.FilterPass;
 	fxaaPass: render.FXAAPass;
+	postPass: render.FilterPass;
 	mainFBO: render.FrameBuffer | undefined;
-	antialias = true;
 
 	renderFrame(timeStep: number) {
 		if (this.mode_ < GameMode.Title) {
@@ -255,21 +265,22 @@ class MainScene implements sd.SceneController {
 			this.downsample64 = render.resamplePass(this.rc, this.scene_.meshMgr, 256);
 			this.boxFilter = render.boxFilterPass(this.rc, this.scene_.meshMgr, 256);
 		}
+		if (! this.postPass) {
+			this.postPass = posterizePass(this.rc, this.scene_.meshMgr, this.rc.gl.drawingBufferWidth, this.rc.gl.drawingBufferHeight);
+		}
 
 		let mainPassFBO: render.FrameBuffer | null = null;
-		if (this.antialias) {
-			if (! this.fxaaPass) {
-				this.fxaaPass = new render.FXAAPass(this.rc, this.scene_.meshMgr);
-			}
-			if (! this.mainFBO) {
-				this.mainFBO = render.makeScreenFrameBuffer(this.rc, {
-					colourCount: 1,
-					useDepth: true,
-					pixelComponent: render.FBOPixelComponent.Integer
-				});
-			}
-			mainPassFBO = this.mainFBO;
+		if (! this.fxaaPass) {
+			this.fxaaPass = new render.FXAAPass(this.rc, this.scene_.meshMgr);
 		}
+		if (! this.mainFBO) {
+			this.mainFBO = render.makeScreenFrameBuffer(this.rc, {
+				colourCount: 1,
+				useDepth: true,
+				pixelComponent: render.FBOPixelComponent.Integer
+			});
+		}
+		mainPassFBO = this.mainFBO;
 
 		// -- shadow pass
 		let spotShadow: world.ShadowView | null = null;
@@ -326,9 +337,8 @@ class MainScene implements sd.SceneController {
 				this.scene_.pbrModelMgr.draw(this.scene_.pbrModelMgr.all(), renderPass, camera, spotShadow, world.PBRLightingQuality.CookTorrance, this.assets_.tex.reflectCubeSpace);
 			});
 
-			if (this.antialias) {
-				this.fxaaPass.apply(this.rc, this.scene_.meshMgr, mainPassFBO!.colourAttachmentTexture(0)!);
-			}
+			this.postPass.apply(this.rc, this.scene_.meshMgr, mainPassFBO!.colourAttachmentTexture(0)!);
+			this.fxaaPass.apply(this.rc, this.scene_.meshMgr, this.postPass.output);
 		}
 	}
 
