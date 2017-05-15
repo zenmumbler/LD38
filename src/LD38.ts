@@ -108,13 +108,25 @@ function drawFSQ(rc: render.RenderContext, meshMgr: world.MeshManager, tex: rend
 
 function posterizePass(rc: render.RenderContext, meshMgr: world.MeshManager, w: number, h: number) {
 	return new render.FilterPass(rc, meshMgr, w, h, render.FBOPixelComponent.Float, `
-		vec2 screen = gl_FragCoord.xy / vec2(1280, 720);
-		vec2 effect = vec2(1.0) - pow(screen - .5, vec2(4.0)) * 16.0;
-		// effect = 2.0 * effect;
-		return get(0, 0) * (effect.x * effect.y);
+		const float sharpness = 0.5;
+		const float darkness = 0.55;
+		const vec3 tint = vec3(0.0, 0.0, 0.0);
+
+		// posterize
+		vec3 pixel = floor(get(0, 0) * 8.0) / 8.0;
+		// luminance (grayscale)
+		pixel = vec3(dot(pixel, vec3(0.2126, 0.7152, 0.0722)));
+		// chromatic abberation
+		// vec3 pixel = vec3(get(-32, 0).r, get(0, 0).g, get(32, 0).b);
+
+		// vignette
+		vec3 diff = tint - pixel;
+		float dist = distance(vertexUV_intp, vec2(0.5));
+		float intensity = 1.0 - smoothstep(0.8, sharpness * 0.799, dist * (sharpness + darkness));
+	
+		return pixel + diff * intensity;
 	`);
 }
-
 
 
 class MainScene implements sd.SceneController {
@@ -159,6 +171,10 @@ class MainScene implements sd.SceneController {
 						if (this.mainFBO) {
 							rc.gl.deleteFramebuffer(this.mainFBO.resource);
 							this.mainFBO = undefined;
+						}
+						if (this.postPass) {
+							rc.gl.deleteTexture(this.postPass.output.resource);
+							this.postPass = undefined;
 						}
 					}
 				});
@@ -252,7 +268,7 @@ class MainScene implements sd.SceneController {
 	downsample64: render.FilterPass;
 	boxFilter: render.FilterPass;
 	fxaaPass: render.FXAAPass;
-	postPass: render.FilterPass;
+	postPass: render.FilterPass | undefined;
 	mainFBO: render.FrameBuffer | undefined;
 
 	renderFrame(timeStep: number) {
