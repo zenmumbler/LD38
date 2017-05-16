@@ -120,11 +120,10 @@ function posterizePass(rc: render.RenderContext, meshMgr: world.MeshManager, w: 
 		// vec3 pixel = vec3(get(-32, 0).r, get(0, 0).g, get(32, 0).b);
 
 		// vignette
-		vec3 diff = tint - pixel;
 		float dist = distance(vertexUV_intp, vec2(0.5));
-		float intensity = 1.0 - smoothstep(0.8, sharpness * 0.799, dist * (sharpness + darkness));
+		float intensity = smoothstep(0.8, sharpness * 0.799, dist * (sharpness + darkness));
 	
-		return pixel + diff * intensity;
+		return mix(tint, pixel, intensity);
 	`);
 }
 
