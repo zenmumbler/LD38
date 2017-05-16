@@ -6,9 +6,7 @@
         "outFile": "build/ld38.js",
 
         "noEmitOnError": true,
-        "alwaysStrict": true,
-        "noImplicitAny": true,
-        "suppressImplicitAnyIndexErrors": false,
+        "strict": true,
         "noImplicitReturns": true,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": false,
