@@ -1,0 +1,164 @@
+# PBR textures for the Sponza model.
+# For more information: www.alexandre-pestana.com
+# 
+# Updated by Arthur Langereis (@zenmumbler)
+# - converted to use optimized PNGs for much smaller disk size
+# - using Pm / Pr notations for PBR maps/values
+# - removed all the old/unused properties
+# - replaced full-white/black textures with single values
+# - removed redundant normal maps for fabrics
+# - shrunk ChainTexture_metallic to 512x512
+# - use norm instead of bump for normal maps
+# - disable normal maps as they are no good
+
+newmtl leaf
+	map_Kd textures_pbr/Sponza_Thorn_diffuse.png
+	map_d textures_pbr/sponza_thorn_mask.png
+	norm textures_pbr/Sponza_Thorn_normal.png
+	Pm 0
+	map_Pr textures_pbr/Sponza_Thorn_roughness.png
+
+newmtl vase_round
+	map_Kd textures_pbr/VaseRound_diffuse.png
+	norm textures_pbr/VaseRound_normal.png
+	Pm 0
+	map_Pr textures_pbr/VaseRound_roughness.png
+
+newmtl Material__47
+	Kd 0.5880 0.5880 0.5880
+	Pm 0
+	Pr .6
+
+newmtl Material__57
+	map_Kd textures_pbr/VasePlant_diffuse.png
+	map_d textures_pbr/vase_plant_mask.png
+	norm textures_pbr/VasePlant_normal.png
+	Pm 0
+	map_Pr textures_pbr/VasePlant_roughness.png
+
+newmtl Material__298
+	map_Kd textures_pbr/Background_Albedo.png
+	norm textures_pbr/Background_Normal.png
+	Pm 0
+	map_Pr textures_pbr/Background_roughness.png
+
+newmtl bricks
+	map_Kd textures_pbr/Sponza_Bricks_a_Albedo.png
+	norm textures_pbr/Sponza_Bricks_a_Normal.png
+	Pm 0
+	map_Pr textures_pbr/Sponza_Bricks_a_Roughness.png
+
+newmtl arch
+	map_Kd textures_pbr/Sponza_Arch_diffuse.png
+	norm textures_pbr/Sponza_Arch_normal.png
+	Pm 0
+	map_Pr textures_pbr/Sponza_Arch_roughness.png
+
+newmtl ceiling
+	map_Kd textures_pbr/Sponza_Ceiling_diffuse.png
+	norm textures_pbr/Sponza_Ceiling_normal.png
+	Pm 0
+	map_Pr textures_pbr/Sponza_Ceiling_roughness.png
+
+newmtl column_a
+	map_Kd textures_pbr/Sponza_Column_a_diffuse.png
+	norm textures_pbr/Sponza_Column_a_normal.png
+	Pm 0
+	map_Pr textures_pbr/Sponza_Column_a_roughness.png
+
+newmtl floor
+	map_Kd textures_pbr/Sponza_Floor_diffuse.png
+	norm textures_pbr/Sponza_Floor_normal.png
+	Pm 0
+	map_Pr textures_pbr/Sponza_Floor_roughness.png
+
+newmtl column_c
+	map_Kd textures_pbr/Sponza_Column_c_diffuse.png
+	norm textures_pbr/Sponza_Column_c_normal.png
+	Pm 0
+	map_Pr textures_pbr/Sponza_Column_c_roughness.png
+
+newmtl details
+	map_Kd textures_pbr/Sponza_Details_diffuse.png
+	norm textures_pbr/Sponza_Details_normal.png
+	Pm 0
+	map_Pr textures_pbr/Sponza_Details_roughness.png
+
+newmtl column_b
+	map_Kd textures_pbr/Sponza_Column_b_diffuse.png
+	norm textures_pbr/Sponza_Column_b_normal.png
+	Pm 0
+	map_Pr textures_pbr/Sponza_Column_b_roughness.png
+
+newmtl flagpole
+	map_Kd textures_pbr/Sponza_FlagPole_diffuse.png
+	norm textures_pbr/Sponza_FlagPole_normal.png
+	Pm 1
+	map_Pr textures_pbr/Sponza_FlagPole_roughness.png
+
+newmtl fabric_e
+	map_Kd textures_pbr/Sponza_Fabric_Green_diffuse.png
+#	norm textures_pbr/Sponza_Fabric_normal.png
+	map_Pm textures_pbr/Sponza_Fabric_metallic.png
+	map_Pr textures_pbr/Sponza_Fabric_roughness.png
+
+newmtl fabric_d
+	map_Kd textures_pbr/Sponza_Fabric_Blue_diffuse.png
+#	norm textures_pbr/Sponza_Fabric_normal.png
+	map_Pm textures_pbr/Sponza_Fabric_metallic.png
+	map_Pr textures_pbr/Sponza_Fabric_roughness.png
+
+newmtl fabric_a
+	map_Kd textures_pbr/Sponza_Fabric_Red_diffuse.png
+#	norm textures_pbr/Sponza_Fabric_normal.png
+	map_Pm textures_pbr/Sponza_Fabric_metallic.png
+	map_Pr textures_pbr/Sponza_Fabric_roughness.png
+
+newmtl fabric_g
+	map_Kd textures_pbr/Sponza_Curtain_Blue_diffuse.png
+#	norm textures_pbr/Sponza_Curtain_normal.png
+	map_Pm textures_pbr/Sponza_Curtain_metallic.png
+	map_Pr textures_pbr/Sponza_Curtain_roughness.png
+
+newmtl fabric_c
+	map_Kd textures_pbr/Sponza_Curtain_Red_diffuse.png
+#	norm textures_pbr/Sponza_Curtain_normal.png
+	map_Pm textures_pbr/Sponza_Curtain_metallic.png
+	map_Pr textures_pbr/Sponza_Curtain_roughness.png
+
+newmtl fabric_f
+	map_Kd textures_pbr/Sponza_Curtain_Green_diffuse.png
+#	norm textures_pbr/Sponza_Curtain_normal.png
+	map_Pm textures_pbr/Sponza_Curtain_metallic.png
+	map_Pr textures_pbr/Sponza_Curtain_roughness.png
+
+newmtl chain
+	map_Kd textures_pbr/ChainTexture_Albedo.png
+	map_d textures_pbr/chain_texture_mask.png
+	norm textures_pbr/ChainTexture_Normal.png
+	map_Pm textures_pbr/ChainTexture_Metallic.png
+	map_Pr textures_pbr/ChainTexture_Roughness.png
+
+newmtl vase_hanging
+	map_Kd textures_pbr/VaseHanging_diffuse.png
+	norm textures_pbr/VaseHanging_normal.png
+	Pm 1
+	map_Pr textures_pbr/VaseHanging_roughness.png
+
+newmtl vase
+	map_Kd textures_pbr/Vase_diffuse.png
+	norm textures_pbr/Vase_normal.png
+	Pm 0
+	map_Pr textures_pbr/Vase_roughness.png
+
+newmtl Material__25
+	map_Kd textures_pbr/Lion_Albedo.png
+	norm textures_pbr/Lion_Normal.png
+	Pm 0
+	map_Pr textures_pbr/Lion_Roughness.png
+
+newmtl roof
+	map_Kd textures_pbr/Sponza_Roof_diffuse.png
+	norm textures_pbr/Sponza_Roof_normal.png
+	Pm 0
+	map_Pr textures_pbr/Sponza_Roof_roughness.png

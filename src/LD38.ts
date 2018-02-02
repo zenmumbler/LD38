@@ -112,12 +112,14 @@ function posterizePass(rc: render.RenderContext, meshMgr: world.MeshManager, w: 
 		const float darkness = 0.55;
 		const vec3 tint = vec3(0.0, 0.0, 0.0);
 
+		// no effect
+		vec3 pixel = get(0, 0);
 		// posterize
-		vec3 pixel = floor(get(0, 0) * 8.0) / 8.0;
+		// vec3 pixel = floor(get(0, 0) * 8.0) / 8.0;
 		// luminance (grayscale)
-		pixel = vec3(dot(pixel, vec3(0.2126, 0.7152, 0.0722)));
+		// pixel = vec3(dot(pixel, vec3(0.2126, 0.7152, 0.0722)));
 		// chromatic abberation
-		// vec3 pixel = vec3(get(-32, 0).r, get(0, 0).g, get(32, 0).b);
+		// pixel = vec3(get(-32, 0).r, get(0, 0).g, get(32, 0).b);
 
 		// vignette
 		float dist = distance(vertexUV_intp, vec2(0.5));
